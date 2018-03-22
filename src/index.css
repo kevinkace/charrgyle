@@ -1,0 +1,20 @@
+.charrgyle {
+    height: 100vh;
+    position: absolute;
+}
+
+svg {
+    fill : red;
+
+    background: grey;
+
+    rect {
+        opacity: 0.2;
+        /* transform: rotate(45deg); */
+        transition: transform 0.3s;
+        /* outline: solid 1px #7003; */
+    }
+    text {
+        fill : black;
+    }
+}
