@@ -11,7 +11,7 @@ const X_SCALE = 70;
 const Y_SCALE = 142;
 
 function transform(obj) {
-    return `rotate(45deg) translate(${obj.x % 2 ? 50 : 0}px, ${obj.x % 2 ? 50 : 0}px`;
+    return `rotate(45deg) translate(${obj.mod ? 50 : 0}px, ${obj.mod ? 50 : 0}px)`;
 }
 
 function opacity(obj, state) {
@@ -20,16 +20,26 @@ function opacity(obj, state) {
     }
 
     let offset = {
-        x : Math.abs(obj.x - state.hover.x),
-        y : Math.abs(obj.y - state.hover.y)
-    }
+            x : obj.x - state.hover.x,
+            y : obj.y - state.hover.y
+        },
+
+        nw = offset.x === -1 && offset.y === (obj.mod ? -1 : 0),
+        sw = offset.x === -1 && offset.y === (obj.mod ? 0 : 1),
+        ne = offset.x === 1  && offset.y === (obj.mod ? -1 : 0),
+        se = offset.x === 1  && offset.y === (obj.mod ? 0 : 1);
+        // nw = offset.x === -1 && offset.y === 0,
+        // sw = offset.x === -1 && offset.y === 1,
+        // ne = offset.x === 1  && offset.y === 0,
+        // se = offset.x === 1  && offset.y === 1;
+
 
     // currently hovered
     if(!offset.x && !offset.y) {
         return 0;
     }
 
-    if(offset.x + offset.y < 2) {
+    if(nw || sw || ne || se) {
         return 0.5;
     }
 
@@ -43,7 +53,7 @@ m.mount(document.getElementById("mount"), {
         for(let y = 0; y < COUNT_Y; y++) {
             for (let x = 0; x < COUNT_X; x++) {
                 vnode.state.grid[y] = vnode.state.grid[y] || [];
-                vnode.state.grid[y][x] = { x, y };
+                vnode.state.grid[y][x] = { x, y, mod : x % 2 };
             }
         }
 
@@ -79,9 +89,9 @@ m.mount(document.getElementById("mount"), {
                             }
                         }),
                         m("text", {
-                            x : obj.x * X_SCALE,
-                            y : obj.y * Y_SCALE,
-                            transform       : transform(obj),
+                            x : obj.x * X_SCALE + 40,
+                            y : obj.y * Y_SCALE + (obj.mod ? 120 : 40),
+                            // transform       : transform(obj),
                             transformOrigin : `${obj.x * X_SCALE + 50}px ${obj.y * Y_SCALE + 50}`
 
                         }, obj.x + "-" + obj.y)
