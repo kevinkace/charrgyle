@@ -71,7 +71,7 @@ m.mount(document.getElementById("mount"), {
                     type : "video/mp4"
                 })
             ),
-        // <video autoplay="" loop="" playsinline="playsinline" class="mc32fc5f0a_videoBase mc32fc5f0a_videoPlayingBase mc32fc5f0a_videoPlayingvertical" style="transform: translateX(-50%);"><source src="https://guildwars2.staticwars.com/img/pof/hero/bg.44deb054.mp4" type="video/mp4"></video>
+
             m("svg", {
                     width  : 1920,
                     height : 1080,
@@ -82,15 +82,19 @@ m.mount(document.getElementById("mount"), {
 
                 m("defs",
                     m("mask", {
-                        id : "mask",
+                            id : "mask",
 
-                        x : 0,
-                        y : 0,
+                            x : 0,
+                            y : 0,
 
-                        width: 1920,
-                        height: 1080
-                    })
+                            width: 1920,
+                            height: 1080
+                        }
+
+                        // mask rects
+                    )
                 ),
+
                 vnode.state.grid.map((y) =>
                     y.map((obj) =>
                         m("g",
@@ -120,6 +124,8 @@ m.mount(document.getElementById("mount"), {
                         )
                     )
                 )
+
+                // BG image with mask
             )
         )
 });
