@@ -1,12 +1,24 @@
 .charrgyle {
+    width: 100%;
     height: 100vh;
     position: absolute;
 }
 
-svg {
-    fill : red;
+.video {
+    position: absolute;
+    top : 0;
+    right: 0;
+    bottom : 0;
+    left : 0;
+    width: 100%;
+}
 
-    background: grey;
+svg {
+    position: absolute;
+    fill : red;
+    z-index: 2;
+
+    background: transparent;
 
     rect {
         opacity: 0.2;
