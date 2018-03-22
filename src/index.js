@@ -13,7 +13,7 @@ const Y_SCALE = 142;
 const MAX_OPACITY = 0.7;
 
 function transform(obj) {
-    return `rotate(45deg) translate(${obj.mod ? 50 : 0}px, ${obj.mod ? 50 : 0}px)`;
+    return `rotate(45deg) translate(${obj.mod ? 50.2 : 0}px, ${obj.mod ? 50.2 : 0}px)`;
 }
 
 function opacity(obj, state) {
