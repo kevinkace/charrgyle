@@ -15,10 +15,16 @@
 
 svg {
     position: absolute;
-    fill : red;
+    top: -50px;
+    left: -50px;
+    fill : transparent;
     z-index: 2;
 
     background: transparent;
+
+    defs rect {
+        opacity: 1;
+    }
 
     rect {
         opacity: 0.2;
@@ -26,6 +32,7 @@ svg {
         transition: transform 0.3s;
         /* outline: solid 1px #7003; */
     }
+
     text {
         fill : black;
     }

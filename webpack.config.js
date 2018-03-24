@@ -30,6 +30,17 @@ module.exports = {
         }, {
             test   : /\.css$/,
             loader : "modular-css-webpack/loader"
+        }, {
+            test   : /\.(gif|png|jpg)$/i,
+            use: [
+                "file-loader",
+                {
+                  loader  : "image-webpack-loader",
+                  options : {
+                        bypassOnDebug : true,
+                    },
+                },
+            ]
         }]
     },
     plugins : [

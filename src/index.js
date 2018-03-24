@@ -4,11 +4,16 @@ import css from "./index.css";
 
 import "minireset.css";
 
-const COUNT_X = Math.floor(window.innerWidth / 70) + 1;
-const COUNT_Y = Math.floor(window.innerHeight / 142) + 1;
+import foreground from "./foreground.jpg";
 
-const X_SCALE = 70;
-const Y_SCALE = 142;
+const SIZE = 100;
+
+const X_SCALE = (SIZE * 0.7);
+const Y_SCALE = (SIZE * 1.42);
+
+const COUNT_X = Math.floor(window.innerWidth / X_SCALE) + 1;
+const COUNT_Y = Math.floor(window.innerHeight / Y_SCALE) + 1;
+
 
 const MAX_OPACITY = 0.7;
 
@@ -16,9 +21,9 @@ function transform(obj) {
     return `rotate(45deg) translate(${obj.mod ? 50.2 : 0}px, ${obj.mod ? 50.2 : 0}px)`;
 }
 
-function opacity(obj, state) {
+function opacity(obj, state, max = 1) {
     if(!state.hover) {
-        return 1 * MAX_OPACITY;
+        return 1 * max;
     }
 
     let offset = {
@@ -37,10 +42,27 @@ function opacity(obj, state) {
     }
 
     if(nw || sw || ne || se) {
-        return 0.5 * MAX_OPACITY;
+        return 0.5 * max;
     }
 
-    return MAX_OPACITY;
+    return max;
+}
+
+function opacityToHex(obj, state) {
+    const hex = [ "a", "b", "c", "d", "e", "f" ];
+    const op = 1 - opacity(obj, state);
+    const base16 = Math.floor(op * 16);
+
+    return base16 < 15 ? "#fff" : "#000";
+
+    // if(base16 < 16) {
+    //     return `#${base16}${base16}${base16}`;
+    // }
+
+    // let letter = hex[base16 - 10];
+
+    // return `#${letter}${letter}${letter}`;
+
 }
 
 m.mount(document.getElementById("mount"), {
@@ -89,43 +111,68 @@ m.mount(document.getElementById("mount"), {
 
                             width: 1920,
                             height: 1080
-                        }
+                        },
 
-                        // mask rects
+                        vnode.state.grid.map((y) =>
+                            y.map((obj) =>
+                                m("rect", {
+                                    x : obj.x * X_SCALE,
+                                    y : obj.y * Y_SCALE,
+
+                                    width  : SIZE,
+                                    height : SIZE,
+
+                                    style : {
+                                        fill : opacityToHex(obj, vnode.state),
+                                        transform       : transform(obj),
+                                        transformOrigin : `${obj.x * X_SCALE + 50}px ${obj.y * Y_SCALE + 50}px`
+                                    }
+                                })
+                            )
+                        )
                     )
                 ),
 
-                vnode.state.grid.map((y) =>
-                    y.map((obj) =>
-                        m("g",
-                            m("rect", {
-                                x : obj.x * X_SCALE,
-                                y : obj.y * Y_SCALE,
+                m("image", {
+                    "xlink:href" : foreground,
+                    x    : 0,
+                    y    : 0,
+                    width  : 1920,
+                    height : 1080,
+                    mask : "url(#mask)"
+                }),
 
-                                width  : 100,
-                                height : 100,
+                m("g",
+                    vnode.state.grid.map((y) =>
+                        y.map((obj) =>
+                            m("g",
+                                m("rect", {
+                                    x : obj.x * X_SCALE,
+                                    y : obj.y * Y_SCALE,
 
-                                style : {
-                                    opacity         : opacity(obj, vnode.state),
-                                    transform       : transform(obj),
-                                    transformOrigin : `${obj.x * X_SCALE + 50}px ${obj.y * Y_SCALE + 50}px`
-                                },
-                                onmousemove : () => {
-                                    vnode.state.hover = { x : obj.x, y : obj.y };
-                                    m.redraw();
-                                }
-                            }),
-                            m("text", {
-                                x : obj.x * X_SCALE + 40,
-                                y : obj.y * Y_SCALE + (obj.mod ? 120 : 40),
-                                transformOrigin : `${obj.x * X_SCALE + 50}px ${obj.y * Y_SCALE + 50}`
+                                    width  : SIZE,
+                                    height : SIZE,
 
-                            }, obj.x + "-" + obj.y)
+                                    style : {
+                                        opacity         : opacity(obj, vnode.state, MAX_OPACITY),
+                                        transform       : transform(obj),
+                                        transformOrigin : `${obj.x * X_SCALE + 50}px ${obj.y * Y_SCALE + 50}px`
+                                    },
+                                    onmousemove : () => {
+                                        vnode.state.hover = { x : obj.x, y : obj.y };
+                                        m.redraw();
+                                    }
+                                }),
+                                m("text", {
+                                    x : obj.x * X_SCALE + 40,
+                                    y : obj.y * Y_SCALE + (obj.mod ? 120 : 40),
+                                    transformOrigin : `${obj.x * X_SCALE + 50}px ${obj.y * Y_SCALE + 50}`
+
+                                }, obj.x + "-" + obj.y)
+                            )
                         )
                     )
                 )
-
-                // BG image with mask
             )
         )
 });
