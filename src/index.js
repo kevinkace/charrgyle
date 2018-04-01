@@ -65,6 +65,17 @@ function opacityToHex(obj, state) {
 
 }
 
+// return distance in px between event and dom node
+function getDist(e, rect) {
+    if(!rect.dom) {
+        return 1000;
+    }
+
+    return Math.random() * 1000;
+
+    // e.page
+}
+
 m.mount(document.getElementById("mount"), {
     oninit : (vnode) => {
         vnode.state.grid = [];
@@ -72,11 +83,36 @@ m.mount(document.getElementById("mount"), {
         for(let y = 0; y < COUNT_Y; y++) {
             for (let x = 0; x < COUNT_X; x++) {
                 vnode.state.grid[y] = vnode.state.grid[y] || [];
-                vnode.state.grid[y][x] = { x, y, mod : x % 2 };
+                vnode.state.grid[y][x] = { x, y, mod : x % 2, fill : "#fff" };
             }
         }
 
-        vnode.state.squares = 40;
+        window.addEventListener("mousemove", (e) => {
+            vnode.state.grid.forEach((y) => y.forEach((rect) => {
+
+                // get distance from center to mouse
+                rect.dist = getDist(e, rect);
+                // match thresholds
+
+                // convert distance to hex
+                rect.fill = "#fff";
+
+                if(rect.dist > 400) {
+                    return;
+                }
+                if(rect.dist < 40) {
+                    rect.fill = "#000";
+                }
+                //  save to rect.fill
+
+                // console.log(e);
+                // debugger;
+            }));
+
+            m.redraw();
+        });
+
+        // vnode.state.squares = 40;
     },
     view : (vnode) =>
         m("div", { class : css.charrgyle },
@@ -102,6 +138,7 @@ m.mount(document.getElementById("mount"), {
                     xmlns   : "http://www.w3.org/2000/svg"
                 },
 
+                // DEFS
                 m("defs",
                     m("mask", {
                             id : "mask",
@@ -114,18 +151,24 @@ m.mount(document.getElementById("mount"), {
                         },
 
                         vnode.state.grid.map((y) =>
-                            y.map((obj) =>
+                            y.map((rect) =>
                                 m("rect", {
-                                    x : obj.x * X_SCALE,
-                                    y : obj.y * Y_SCALE,
+                                    oncreate : (rectVnode) => {
+                                        rect.dom = rectVnode.dom;
+                                    },
+
+                                    x : rect.x * X_SCALE,
+                                    y : rect.y * Y_SCALE,
 
                                     width  : SIZE,
                                     height : SIZE,
 
                                     style : {
-                                        fill : opacityToHex(obj, vnode.state),
-                                        transform       : transform(obj),
-                                        transformOrigin : `${obj.x * X_SCALE + 50}px ${obj.y * Y_SCALE + 50}px`
+                                        // fill            : opacityToHex(obj, vnode.state),
+                                        // fill            : Math.random() > 0.5 ? "#fff" : "#000",
+                                        fill            : rect.fill,
+                                        transform       : transform(rect),
+                                        transformOrigin : `${rect.x * X_SCALE + 50}px ${rect.y * Y_SCALE + 50}px`
                                     }
                                 })
                             )
@@ -133,6 +176,7 @@ m.mount(document.getElementById("mount"), {
                     )
                 ),
 
+                // IMAGE
                 m("image", {
                     "xlink:href" : foreground,
                     x    : 0,
@@ -140,39 +184,41 @@ m.mount(document.getElementById("mount"), {
                     width  : 1920,
                     height : 1080,
                     mask : "url(#mask)"
-                }),
+                })
+                // ,
 
-                m("g",
-                    vnode.state.grid.map((y) =>
-                        y.map((obj) =>
-                            m("g",
-                                m("rect", {
-                                    x : obj.x * X_SCALE,
-                                    y : obj.y * Y_SCALE,
+                // m("g",
+                //     vnode.state.grid.map((y) =>
+                //         y.map((obj) =>
+                //             m("g",
+                //                 m("rect", {
+                //                     x : obj.x * X_SCALE,
+                //                     y : obj.y * Y_SCALE,
 
-                                    width  : SIZE,
-                                    height : SIZE,
+                //                     width  : SIZE,
+                //                     height : SIZE,
 
-                                    style : {
-                                        opacity         : opacity(obj, vnode.state, MAX_OPACITY),
-                                        transform       : transform(obj),
-                                        transformOrigin : `${obj.x * X_SCALE + 50}px ${obj.y * Y_SCALE + 50}px`
-                                    },
-                                    onmousemove : () => {
-                                        vnode.state.hover = { x : obj.x, y : obj.y };
-                                        m.redraw();
-                                    }
-                                }),
-                                m("text", {
-                                    x : obj.x * X_SCALE + 40,
-                                    y : obj.y * Y_SCALE + (obj.mod ? 120 : 40),
-                                    transformOrigin : `${obj.x * X_SCALE + 50}px ${obj.y * Y_SCALE + 50}`
+                //                     style : {
+                //                         opacity         : opacity(obj, vnode.state, MAX_OPACITY),
+                //                         transform       : transform(obj),
+                //                         transformOrigin : `${obj.x * X_SCALE + 50}px ${obj.y * Y_SCALE + 50}px`
+                //                     }
+                //                     // ,
+                //                     // onmousemove : () => {
+                //                     //     vnode.state.hover = { x : obj.x, y : obj.y };
+                //                     //     m.redraw();
+                //                     // }
+                //                 }),
+                //                 m("text", {
+                //                     x : obj.x * X_SCALE + 40,
+                //                     y : obj.y * Y_SCALE + (obj.mod ? 120 : 40),
+                //                     transformOrigin : `${obj.x * X_SCALE + 50}px ${obj.y * Y_SCALE + 50}`
 
-                                }, obj.x + "-" + obj.y)
-                            )
-                        )
-                    )
-                )
+                //                 }, obj.x + "-" + obj.y)
+                //             )
+                //         )
+                //     )
+                // )
             )
         )
 });
