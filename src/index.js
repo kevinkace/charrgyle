@@ -4,7 +4,8 @@ import css from "./index.css";
 
 import "minireset.css";
 
-import foreground from "./foreground.jpg";
+// import foreground from "./foreground.jpg";
+import foreground from "./col.jpg";
 
 const SIZE = 100;
 
@@ -71,7 +72,15 @@ function getDist(e, rect) {
         return 1000;
     }
 
-    return Math.random() * 1000;
+    if(!rect.bc) {
+        rect.bc = rect.dom.getBoundingClientRect();
+    }
+
+    let y = e.pageY - rect.bc.top,
+        x = e.pageX - rect.bc.left,
+        dist = Math.sqrt(x ** 2 + y ** 2);
+        // console.log(dist);
+    return dist;
 
     // e.page
 }
@@ -83,7 +92,7 @@ m.mount(document.getElementById("mount"), {
         for(let y = 0; y < COUNT_Y; y++) {
             for (let x = 0; x < COUNT_X; x++) {
                 vnode.state.grid[y] = vnode.state.grid[y] || [];
-                vnode.state.grid[y][x] = { x, y, mod : x % 2, fill : "#fff" };
+                vnode.state.grid[y][x] = { x, y, mod : x % 2, fill : "#fff", delay : Math.random() * 8 };
             }
         }
 
@@ -100,8 +109,17 @@ m.mount(document.getElementById("mount"), {
                 if(rect.dist > 400) {
                     return;
                 }
-                if(rect.dist < 40) {
+                if(rect.dist < 120) {
                     rect.fill = "#000";
+                    return;
+                }
+                if(rect.dist < 200) {
+                    rect.fill = "#999";
+                    return;
+                }
+                if(rect.dist < 300) {
+                    rect.fill = "#bbb";
+                    return;
                 }
                 //  save to rect.fill
 
@@ -166,6 +184,8 @@ m.mount(document.getElementById("mount"), {
                                     style : {
                                         // fill            : opacityToHex(obj, vnode.state),
                                         // fill            : Math.random() > 0.5 ? "#fff" : "#000",
+                                        animationDelay  : `${rect.fill === "#fff" ? 100 : rect.delay}s`,
+                                        // animation       : rect.delay < 0.3 ? "inherit" : "none",
                                         fill            : rect.fill,
                                         transform       : transform(rect),
                                         transformOrigin : `${rect.x * X_SCALE + 50}px ${rect.y * Y_SCALE + 50}px`
@@ -185,40 +205,47 @@ m.mount(document.getElementById("mount"), {
                     height : 1080,
                     mask : "url(#mask)"
                 })
-                // ,
+                ,
 
-                // m("g",
-                //     vnode.state.grid.map((y) =>
-                //         y.map((obj) =>
-                //             m("g",
-                //                 m("rect", {
-                //                     x : obj.x * X_SCALE,
-                //                     y : obj.y * Y_SCALE,
+                m("g", {
+                        mask : "url(#mask)",
+                        id   : "fill"
+                    },
+                    vnode.state.grid.map((y) =>
+                        y.map((obj) =>
+                            m("g",
+                                m("rect", {
+                                    class : css.fill,
+                                    x : obj.x * X_SCALE,
+                                    y : obj.y * Y_SCALE,
 
-                //                     width  : SIZE,
-                //                     height : SIZE,
+                                    width  : SIZE,
+                                    height : SIZE,
 
-                //                     style : {
-                //                         opacity         : opacity(obj, vnode.state, MAX_OPACITY),
-                //                         transform       : transform(obj),
-                //                         transformOrigin : `${obj.x * X_SCALE + 50}px ${obj.y * Y_SCALE + 50}px`
-                //                     }
-                //                     // ,
-                //                     // onmousemove : () => {
-                //                     //     vnode.state.hover = { x : obj.x, y : obj.y };
-                //                     //     m.redraw();
-                //                     // }
-                //                 }),
-                //                 m("text", {
-                //                     x : obj.x * X_SCALE + 40,
-                //                     y : obj.y * Y_SCALE + (obj.mod ? 120 : 40),
-                //                     transformOrigin : `${obj.x * X_SCALE + 50}px ${obj.y * Y_SCALE + 50}`
+                                    style : {
+                                        // fill : obj.delay < 0.3 ? "#6669" : "transparent",
+                                        animationDelay  : `${obj.delay * 2}s`,
+                                        opacity         : opacity(obj, vnode.state, MAX_OPACITY),
+                                        transform       : transform(obj),
+                                        transformOrigin : `${obj.x * X_SCALE + 50}px ${obj.y * Y_SCALE + 50}px`
+                                    }
+                                    // ,
+                                    // onmousemove : () => {
+                                    //     vnode.state.hover = { x : obj.x, y : obj.y };
+                                    //     m.redraw();
+                                    // }
+                                })
+                                // ,
+                                // m("text", {
+                                //     x : obj.x * X_SCALE + 40,
+                                //     y : obj.y * Y_SCALE + (obj.mod ? 120 : 40),
+                                //     transformOrigin : `${obj.x * X_SCALE + 50}px ${obj.y * Y_SCALE + 50}`
 
-                //                 }, obj.x + "-" + obj.y)
-                //             )
-                //         )
-                //     )
-                // )
+                                // }, obj.x + "-" + obj.y)
+                            )
+                        )
+                    )
+                )
             )
         )
 });
