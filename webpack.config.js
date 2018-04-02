@@ -11,7 +11,7 @@ const postcssExtractAnimations = require("postcss-extract-animations");
 // Bundling assets for HtmlWebpackIncludeAssetsPlugi;
 const assets = [
         "https://cdnjs.cloudflare.com/ajax/libs/mithril/1.1.6/mithril.js",
-        "/index.css"
+        "index.css"
     ];
 
 module.exports = {
@@ -32,7 +32,7 @@ module.exports = {
             test   : /\.css$/,
             loader : "modular-css-webpack/loader"
         }, {
-            test   : /\.(gif|png|jpg)$/i,
+            test   : /\.(gif|png|jpg|mp4)$/i,
             use: [
                 "file-loader",
                 {
