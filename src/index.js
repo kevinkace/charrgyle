@@ -6,6 +6,7 @@ import "minireset.css";
 
 // import foreground from "./foreground.jpg";
 import foreground from "./col.jpg";
+import video from "./bg.mp4";
 
 const SIZE = 100;
 
@@ -143,7 +144,7 @@ m.mount(document.getElementById("mount"), {
                     oncreate : (videoVnode) => videoVnode.dom.play()
                 },
                 m("source", {
-                    src : "https://guildwars2.staticwars.com/img/pof/hero/bg.44deb054.mp4",
+                    src  : video,
                     type : "video/mp4"
                 })
             ),

@@ -67,17 +67,19 @@ svg {
 }
 
 .fill {
-    animation: infinite 20s fill;
+    /* animation: infinite 20s fill; */
+    fill: #444;
+    opacity: 1;
 }
 
 @keyframes fill {
     0% {
-        fill: transparent;
+        opacity: 0;
     }
     5% {
-        fill: #4449;
+        opacity: 1;
     }
     10% {
-        fill: transparent;
+        opacity: 0;
     }
 }
